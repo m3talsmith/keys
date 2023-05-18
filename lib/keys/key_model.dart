@@ -1,9 +1,12 @@
+import 'dart:developer';
+import 'dart:io';
+
+import 'package:convert/convert.dart';
 import 'package:cryptography/cryptography.dart';
-import 'package:isar/isar.dart';
+import 'package:path/path.dart';
+import 'package:path_provider/path_provider.dart';
+import 'package:keys/io_utils.dart';
 
-part 'key_model.g.dart';
-
-@collection
 class KeyModel {
   KeyModel({this.name});
   static Future<KeyModel> generate({String? name}) async {
@@ -16,10 +19,32 @@ class KeyModel {
     return key;
   }
 
-  Id id = Isar.autoIncrement;
+  static Future<List<KeyModel>> get keys async {
+    var keysDir = await IoUtils.applicationKeysDirectory;
+    List<KeyModel> keys = [];
+    var keyModels = keysDir
+        .listSync()
+        .where((e) => e.statSync().type == FileSystemEntityType.directory)
+        .map((e) async {
+      var private = await File(join(e.path, 'key')).readAsBytes();
+      var public = await File(join(e.path, 'pub')).readAsBytes();
+      return KeyModel(name: e.path.split(separator).last)
+        ..private = private
+        ..public = public;
+    });
+  }
+
+  static logKeyEntries() async {
+    var dir = await getApplicationSupportDirectory();
+    log('dir: ${dir.path}');
+    await for (var e in dir.list()) {
+      log('Entry => ${e.statSync().type}: ${e.path}');
+    }
+  }
+
   String? name;
   List<int> private = [];
   List<int> public = [];
-  @ignore
+
   SimpleKeyPair? pair;
 }

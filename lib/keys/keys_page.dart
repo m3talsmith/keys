@@ -1,9 +1,7 @@
-import 'dart:developer';
+// import 'dart:developer';
 
 import 'package:flutter/material.dart';
-import 'package:convert/convert.dart';
-import 'package:isar/isar.dart';
-import 'package:keys/database/database.dart';
+// import 'package:convert/convert.dart';
 import 'package:keys/keys/key_model.dart';
 import 'package:keys/keys/key_page.dart';
 import 'package:keys/keys/new_key_page.dart';
@@ -18,27 +16,29 @@ class _KeysPageState extends State<KeysPage> {
   List<KeyModel> keys = [];
 
   Future<List<KeyModel>> getKeys() async {
-    return await database!.keyModels.where().findAll();
+    // return await database!.keyModels.where().findAll();
+    return [];
   }
 
   newKey(BuildContext context) async {
     KeyModel? key = await Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => const NewKeyPage()));
-    if (key != null) {
-      var db = database!;
-      try {
-        await db.writeTxn(() async {
-          await db.keyModels.put(key);
-        });
-        log('Key added: public: ${hex.encode(key.public)}');
-      } catch (e) {
-        log('Error writing: $e');
-      }
-      keys = await getKeys();
-      setState(() {
-        keys = keys;
-      });
-    }
+    await KeyModel.logKeyEntries();
+    // if (key != null) {
+    //   var db = database!;
+    //   try {
+    //     await db.writeTxn(() async {
+    //       await db.keyModels.put(key);
+    //     });
+    //     log('Key added: public: ${hex.encode(key.public)}');
+    //   } catch (e) {
+    //     log('Error writing: $e');
+    //   }
+    //   keys = await getKeys();
+    //   setState(() {
+    //     keys = keys;
+    //   });
+    // }
   }
 
   @override

@@ -1,10 +1,12 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
-import 'package:keys/database/database.dart';
+import 'package:keys/io_utils.dart';
 import 'package:keys/keys/keys_page.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  database = await openDatabase();
+  await IoUtils.createBaseDirectories();
   runApp(const App());
 }
 
