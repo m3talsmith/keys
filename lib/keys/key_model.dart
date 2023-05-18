@@ -22,17 +22,37 @@ class KeyModel {
   static Future<List<KeyModel>> get keys async {
     var keysDir = await IoUtils.applicationKeysDirectory;
     List<KeyModel> keys = [];
-    var keyModels = keysDir
+    var keydirs = keysDir
         .listSync()
         .where((e) => e.statSync().type == FileSystemEntityType.directory)
-        .map((e) async {
+        .toList();
+    for (var e in keydirs) {
       var private = await File(join(e.path, 'key')).readAsBytes();
       var public = await File(join(e.path, 'pub')).readAsBytes();
-      return KeyModel(name: e.path.split(separator).last)
-        ..private = private
-        ..public = public;
-    });
+      var key = KeyModel(name: e.path.split(separator).last);
+      key.public = public;
+      key.private = private;
+      keys.add(key);
+    }
+    return keys;
   }
+
+  KeyModel.fromBytes({
+    required this.name,
+    required this.private,
+    required this.public,
+  }) {
+    var pairType = X25519().keyPairType;
+    var pub = SimplePublicKey(public, type: pairType);
+    pair = SimpleKeyPairData(private, publicKey: pub, type: pairType);
+  }
+
+  // static KeyModel fromPair({
+  //   required this.name,
+  //   required this.pair,
+  // }) async {
+  //   private = pair.extractPrivateKeyBytes()
+  // }
 
   static logKeyEntries() async {
     var dir = await getApplicationSupportDirectory();

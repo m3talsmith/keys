@@ -45,7 +45,7 @@ class _KeysPageState extends State<KeysPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: FutureBuilder(
-          future: getKeys(),
+          future: KeyModel.keys,
           builder:
               (BuildContext context, AsyncSnapshot<List<KeyModel>> snapshot) {
             if (snapshot.hasData) {
