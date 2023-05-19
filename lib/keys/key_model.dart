@@ -1,11 +1,10 @@
 import 'dart:developer';
 import 'dart:io';
 
-import 'package:convert/convert.dart';
 import 'package:cryptography/cryptography.dart';
+import 'package:keys/io_utils.dart';
 import 'package:path/path.dart';
 import 'package:path_provider/path_provider.dart';
-import 'package:keys/io_utils.dart';
 
 class KeyModel {
   KeyModel({this.name});
@@ -47,12 +46,13 @@ class KeyModel {
     pair = SimpleKeyPairData(private, publicKey: pub, type: pairType);
   }
 
-  // static KeyModel fromPair({
-  //   required this.name,
-  //   required this.pair,
-  // }) async {
-  //   private = pair.extractPrivateKeyBytes()
-  // }
+  save() async {
+    var keysDir = await IoUtils.applicationKeysDirectory;
+    var keyDir = Directory(join(keysDir.path, name));
+    await keyDir.create(recursive: true);
+    await File(join(keyDir.path, 'key')).writeAsBytes(private);
+    await File(join(keyDir.path, 'pub')).writeAsBytes(public);
+  }
 
   static logKeyEntries() async {
     var dir = await getApplicationSupportDirectory();

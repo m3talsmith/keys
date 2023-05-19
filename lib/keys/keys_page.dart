@@ -15,30 +15,16 @@ class KeysPage extends StatefulWidget {
 class _KeysPageState extends State<KeysPage> {
   List<KeyModel> keys = [];
 
-  Future<List<KeyModel>> getKeys() async {
-    // return await database!.keyModels.where().findAll();
-    return [];
-  }
-
   newKey(BuildContext context) async {
     KeyModel? key = await Navigator.of(context)
         .push(MaterialPageRoute(builder: (context) => const NewKeyPage()));
-    await KeyModel.logKeyEntries();
-    // if (key != null) {
-    //   var db = database!;
-    //   try {
-    //     await db.writeTxn(() async {
-    //       await db.keyModels.put(key);
-    //     });
-    //     log('Key added: public: ${hex.encode(key.public)}');
-    //   } catch (e) {
-    //     log('Error writing: $e');
-    //   }
-    //   keys = await getKeys();
-    //   setState(() {
-    //     keys = keys;
-    //   });
-    // }
+    if (key != null) {
+      await key.save();
+      keys = await KeyModel.keys;
+      setState(() {
+        keys = keys;
+      });
+    }
   }
 
   @override
